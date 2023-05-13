@@ -24,8 +24,8 @@ export const contactsApi = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Contacts']
-    })
-  })
+    }),
+  }),
 });
 
 export const { useGetContactsQuery, useAddContactsMutation,  useDeleteContactsMutation, } = contactsApi;

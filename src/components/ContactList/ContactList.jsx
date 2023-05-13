@@ -6,7 +6,7 @@ import { useGetContactsQuery } from 'services/contactsApi';
 // import { useSelector } from 'react-redux';
 
 export const ContactList = () => {
-  const { data: contacts, isLoading, error} = useGetContactsQuery();
+  const { data: contacts, isLoading} = useGetContactsQuery();
   console.log('data: ', contacts);
    console.log('isLoading: ', isLoading);
 
@@ -21,7 +21,6 @@ export const ContactList = () => {
   return (
     <>
       {isLoading && <h1>Loading...</h1>}
-      {error && <p>Loading...</p>}
       <List>
         {!isLoading &&
           contacts.map(({ id, name, number }) => (
