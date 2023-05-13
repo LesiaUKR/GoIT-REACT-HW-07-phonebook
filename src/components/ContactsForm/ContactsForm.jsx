@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
-// import { Notify } from 'notiflix/build/notiflix-notify-aio';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { addContact } from '../../redux/contactsSlice';
-// import { useAddContactsMutation} from 'services/contactsApi';
-// import { getContacts } from '../../redux/selectors';
+import {
+  useAddContactsMutation,
+  useGetContactsQuery,
+} from 'services/contactsApi';
 import { Formik } from 'formik';
 import { HiUserAdd } from 'react-icons/hi';
 import {
@@ -14,6 +13,7 @@ import {
   AddButton,
   ErrorMessage,
 } from 'components/ContactsForm/ContactsForm.styled.js';
+import { toast } from 'react-toastify';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -27,24 +27,32 @@ const validationSchema = Yup.object().shape({
 });
 
 export const ContactsForm = () => {
+  const [addContact] = useAddContactsMutation();
+  const { data } = useGetContactsQuery();
 
+  // const [name, setName] = useState('');
+  // const [number, setNumber] = useState('');
 
-  // const contacts = useSelector(getContacts);
-  // const dispatch = useDispatch();
-
-  // const handleSubmit = (values, actions) => {
-  //   const normName = values.name.toLowerCase();
-  //   const existstName = contacts.find(
-  //     ({ name }) => name.toLowerCase() === normName
-  //   );
-  //   console.log(normName);
-  //   console.log(existstName);
-  //   if (existstName) {
-  //     return Notify.info(`This name is already in contacts!`);
-  //   }
-
-  //   dispatch(addContact(values));
-  //   actions.resetForm();
+  const handleSubmit = async (values, { resetForm }) => {
+    const doubleContact = data.find(contact =>
+      contact.name.toLowerCase().includes(values.name.toLowerCase())
+    );
+    const variable =
+      doubleContact && doubleContact.name.length === values.name.length;
+    if (variable) {
+      toast.error(`${values.name} is already in Contacts`, {
+        onClose: resetForm,
+      });
+    } else {
+      await addContact({ name: values.name, number: values.number });
+      toast.success(`${values.name} added to the Contacts`, {
+        onClose: resetForm,
+      });
+    }
+  };
+  // const resetState = () => {
+  //   setName('');
+  //   setNumber('');
   // };
 
   return (
@@ -54,7 +62,7 @@ export const ContactsForm = () => {
         number: '',
       }}
       validationSchema={validationSchema}
-      // onSubmit={handleSubmit}
+      onSubmit={handleSubmit}
     >
       <Form autoComplete="off">
         <FormLabel htmlFor="name">

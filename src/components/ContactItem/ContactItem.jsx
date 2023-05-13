@@ -3,22 +3,23 @@ import PropTypes from 'prop-types';
 import { ListItem, DeleteButton, ListItemName } from './ContactItem.styled';
 import { HiUser } from 'react-icons/hi';
 import { MdDelete } from 'react-icons/md';
-// import { useDispatch } from 'react-redux';
-// import { deleteContact } from 'services/contactsApi';
+import { useDeleteContactsMutation } from 'services/contactsApi';
 
-export const ContactItem = ({ id, name, number } ) => {
-  // const dispatch = useDispatch();
+
+export const ContactItem = (contact) => {
+  const [deleteContact, result] = useDeleteContactsMutation();
 
   return (
     <ListItem>
       <HiUser />
       <ListItemName>
-        {name}: {number}
+        {contact.name}: {contact.phone}
       </ListItemName>
       <DeleteButton
         type="button"
-        id={id}
-        // onClick={() => dispatch(deleteContact(id))}
+        // id={contact.id}
+        onClick={() => deleteContact(contact.id)}
+        disabled={result.isLoading}
       >
         <MdDelete />
         Delete
