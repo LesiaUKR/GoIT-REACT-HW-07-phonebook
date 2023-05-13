@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import * as Yup from 'yup';
 import {
   useAddContactsMutation,
-  useGetContactsQuery,
+  // useGetContactsQuery,
 } from 'services/contactsApi';
 import { Formik } from 'formik';
 import { HiUserAdd } from 'react-icons/hi';
@@ -14,6 +14,7 @@ import {
   ErrorMessage,
 } from 'components/ContactsForm/ContactsForm.styled.js';
 import { toast } from 'react-toastify';
+
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -28,32 +29,26 @@ const validationSchema = Yup.object().shape({
 
 export const ContactsForm = () => {
   const [addContact] = useAddContactsMutation();
-  const { data } = useGetContactsQuery();
+  // const { data } = useGetContactsQuery();
 
-  // const [name, setName] = useState('');
-  // const [number, setNumber] = useState('');
+ const handleSubmit = async (values) => {
+  // const doubleContact = data.find((contact) =>
+  //   contact.name.toLowerCase().includes(values.name.toLowerCase())
+  //  );
+  // const variable =
+  //   doubleContact && doubleContact.name.length === values.name.length;
+  // if (variable) {
+  //   return toast.error(`${values.name} is already in contacts`);
+  // }
 
-  const handleSubmit = async (values, { resetForm }) => {
-    const doubleContact = data.find(contact =>
-      contact.name.toLowerCase().includes(values.name.toLowerCase())
-    );
-    const variable =
-      doubleContact && doubleContact.name.length === values.name.length;
-    if (variable) {
-      toast.error(`${values.name} is already in Contacts`, {
-        onClose: resetForm,
-      });
-    } else {
-      await addContact({ name: values.name, number: values.number });
-      toast.success(`${values.name} added to the Contacts`, {
-        onClose: resetForm,
-      });
-    }
-  };
-  // const resetState = () => {
-  //   setName('');
-  //   setNumber('');
-  // };
+  try {
+    await addContact({ name: values.name, phone: values.number });
+    toast.success(`${values.name} added to the Contacts`);
+  
+  } catch (error) {
+    return toast.error(`Error ocured during adding contact ${values.name}`);
+  }
+};
 
   return (
     <Formik
