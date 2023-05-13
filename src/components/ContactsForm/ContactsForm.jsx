@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 // import { Notify } from 'notiflix/build/notiflix-notify-aio';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { addContact } from '../../redux/contactsSlice';
-// import { useAddContactsMutation} from '../../redux/contactsSlice';
+// import { useAddContactsMutation} from 'services/contactsApi';
 // import { getContacts } from '../../redux/selectors';
 import { Formik } from 'formik';
 import { HiUserAdd } from 'react-icons/hi';
@@ -28,8 +28,7 @@ const validationSchema = Yup.object().shape({
 
 export const ContactsForm = () => {
 
-  // const res = useAddContactsMutation();
-  // console.log(res);
+
   // const contacts = useSelector(getContacts);
   // const dispatch = useDispatch();
 

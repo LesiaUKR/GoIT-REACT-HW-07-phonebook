@@ -4,7 +4,7 @@ import { ListItem, DeleteButton, ListItemName } from './ContactItem.styled';
 import { HiUser } from 'react-icons/hi';
 import { MdDelete } from 'react-icons/md';
 // import { useDispatch } from 'react-redux';
-// import { deleteContact } from '../../redux/contactsSlice';
+// import { deleteContact } from 'services/contactsApi';
 
 export const ContactItem = ({ id, name, number } ) => {
   // const dispatch = useDispatch();
