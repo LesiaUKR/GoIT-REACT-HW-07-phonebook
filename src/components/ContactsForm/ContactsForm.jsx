@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as Yup from 'yup';
 import {
   useAddContactsMutation,
+  useGetContactsQuery,
 } from 'services/contactsApi';
 import { Formik } from 'formik';
 import { HiUserAdd } from 'react-icons/hi';
@@ -12,25 +13,71 @@ import {
   AddButton,
   ErrorMessage,
 } from 'components/ContactsForm/ContactsForm.styled.js';
-import { toast } from 'react-toastify';
-
+import { Notify } from 'notiflix';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, 'the name is too short')
     .max(100, 'the name is too long')
     .required('the name is required'),
-  number: Yup.string()
+  phone: Yup.string()
     .min(3, 'the number is too short')
     .max(50, 'the number is too long')
     .required('the number is required'),
 });
 
-export const ContactsForm = () => {
-  const [addContacts] = useAddContactsMutation();
-  // const { data } = useGetContactsQuery();
+Notify.init({ position: 'center-top' });
 
- const handleSubmit = async (values) => {
+export const ContactsForm = () => {
+  // get contacts list
+  const { data } = useGetContactsQuery();
+
+  const [addContact, { isError, isSuccess, isLoading }] =
+    useAddContactsMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      Notify.success(`The contact has been created`);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (isError) {
+      Notify.failure(`There was an error on our side. Something is wrong`);
+    }
+  }, [isError]);
+
+  Notify.init({ position: 'center-top' });
+
+  async function handleSubmit(formData) {
+    const { name, phone } = formData;
+
+    // check if there are any such contacts
+    if (data &&
+      data.map(el => (el = el.name)).includes(name))
+    {
+      Notify.failure(
+        `A contact with name ${name} already is in your book`
+      );
+    } else if (
+      data &&
+      data.map(el => (el = el.phone)).includes(phone))
+    {
+      Notify.failure(
+        `A contact with phone ${phone} already is in your book`
+      );
+    } else {
+      addContact({
+        name: name,
+        phone: phone,
+      });
+    }
+  }
+
+  //   const [addContacts] = useAddContactsMutation();
+  //   // const { data } = useGetContactsQuery();
+
+  //  const handleSubmit = async (values) => {
   // const doubleContact = data.find((contact) =>
   //   contact.name.toLowerCase().includes(values.name.toLowerCase())
   //  );
@@ -40,15 +87,14 @@ export const ContactsForm = () => {
   //   return toast.error(`${values.name} is already in contacts`);
   // }
 
-  try {
-    await addContacts({ name: values.name, phone: values.phone });
-    toast.success(`${values.name} added to the Contacts`);
-  
-  } catch (error) {
-    return toast.error(`Error ocured during adding contact ${values.name}`);
-  }
-};
+  //   try {
+  //     await addContacts({ name: values.name, phone: values.phone });
+  //     toast.success(`${values.name} added to the Contacts`);
 
+  //   } catch (error) {
+  //     return toast.error(`Error ocured during adding contact ${values.name}`);
+  //   }
+  // };
 
   return (
     <Formik
@@ -77,7 +123,7 @@ export const ContactsForm = () => {
           />
           <ErrorMessage name="number" component="span" />
         </FormLabel>
-        <AddButton type="submit">
+        <AddButton type="submit" disabled={isLoading || isSuccess}>
           <HiUserAdd />
           Add contact
         </AddButton>
