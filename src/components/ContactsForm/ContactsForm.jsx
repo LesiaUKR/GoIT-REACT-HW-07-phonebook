@@ -2,7 +2,6 @@ import React from 'react';
 import * as Yup from 'yup';
 import {
   useAddContactsMutation,
-  // useGetContactsQuery,
 } from 'services/contactsApi';
 import { Formik } from 'formik';
 import { HiUserAdd } from 'react-icons/hi';
@@ -28,7 +27,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export const ContactsForm = () => {
-  const [addContact] = useAddContactsMutation();
+  const [addContacts] = useAddContactsMutation();
   // const { data } = useGetContactsQuery();
 
  const handleSubmit = async (values) => {
@@ -42,7 +41,7 @@ export const ContactsForm = () => {
   // }
 
   try {
-    await addContact({ name: values.name, phone: values.number });
+    await addContacts({ name: values.name, phone: values.phone });
     toast.success(`${values.name} added to the Contacts`);
   
   } catch (error) {
@@ -50,14 +49,12 @@ export const ContactsForm = () => {
   }
 };
 
+
   return (
     <Formik
-      initialValues={{
-        name: '',
-        number: '',
-      }}
-      validationSchema={validationSchema}
+      initialValues={{ name: '', phone: '' }}
       onSubmit={handleSubmit}
+      validationSchema={validationSchema}
     >
       <Form autoComplete="off">
         <FormLabel htmlFor="name">
@@ -65,9 +62,8 @@ export const ContactsForm = () => {
           <Field
             type="text"
             name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
+            title="Name can contain only letters, numbers and hyphen"
+            placeholder="Name"
           />
           <ErrorMessage name="name" component="div" />
         </FormLabel>
@@ -75,10 +71,9 @@ export const ContactsForm = () => {
           Phone number
           <Field
             type="tel"
-            name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, pa-rentheses and can start with +"
-            required
+            name="phone"
+            title="Phone number must contain only numbers, spaces, hyphen and +"
+            placeholder="Phone number"
           />
           <ErrorMessage name="number" component="span" />
         </FormLabel>
