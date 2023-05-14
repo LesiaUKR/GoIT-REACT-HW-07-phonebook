@@ -7,7 +7,7 @@ import { useDeleteContactsMutation } from 'services/contactsApi';
 
 
 export const ContactItem = (contact) => {
-  const [deleteContact, result] = useDeleteContactsMutation();
+  const [deleteContact, {isLoading}] = useDeleteContactsMutation();
 
   return (
     <ListItem>
@@ -17,9 +17,8 @@ export const ContactItem = (contact) => {
       </ListItemName>
       <DeleteButton
         type="button"
-        // id={contact.id}
         onClick={() => deleteContact(contact.id)}
-        disabled={result.isLoading}
+        disabled={isLoading}
       >
         <MdDelete />
         Delete

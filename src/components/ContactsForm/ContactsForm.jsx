@@ -4,7 +4,7 @@ import {
   useAddContactsMutation,
   useGetContactsQuery,
 } from 'services/contactsApi';
-import { Formik } from 'formik';
+import { Formik} from 'formik';
 import { HiUserAdd } from 'react-icons/hi';
 import {
   Form,
@@ -32,7 +32,7 @@ export const ContactsForm = () => {
   // get contacts list
   const { data } = useGetContactsQuery();
 
-  const [addContact, { isError, isSuccess, isLoading }] =
+  const [addContact, { isError, isSuccess }] =
     useAddContactsMutation();
 
   useEffect(() => {
@@ -49,52 +49,22 @@ export const ContactsForm = () => {
 
   Notify.init({ position: 'center-top' });
 
-  async function handleSubmit(formData) {
+  async function handleSubmit(formData, form, setSubmitting) {
     const { name, phone } = formData;
 
     // check if there are any such contacts
-    if (data &&
-      data.map(el => (el = el.name)).includes(name))
-    {
-      Notify.failure(
-        `A contact with name ${name} already is in your book`
-      );
-    } else if (
-      data &&
-      data.map(el => (el = el.phone)).includes(phone))
-    {
-      Notify.failure(
-        `A contact with phone ${phone} already is in your book`
-      );
+    if (data && data.map(el => (el = el.name)).includes(name)) {
+      Notify.failure(`A contact with name ${name} already is in your book`);
+    } else if (data && data.map(el => (el = el.phone)).includes(phone)) {
+      Notify.failure(`A contact with phone ${phone} already is in your book`);
     } else {
-      addContact({
+      await addContact({
         name: name,
         phone: phone,
       });
+      form.resetForm();
     }
   }
-
-  //   const [addContacts] = useAddContactsMutation();
-  //   // const { data } = useGetContactsQuery();
-
-  //  const handleSubmit = async (values) => {
-  // const doubleContact = data.find((contact) =>
-  //   contact.name.toLowerCase().includes(values.name.toLowerCase())
-  //  );
-  // const variable =
-  //   doubleContact && doubleContact.name.length === values.name.length;
-  // if (variable) {
-  //   return toast.error(`${values.name} is already in contacts`);
-  // }
-
-  //   try {
-  //     await addContacts({ name: values.name, phone: values.phone });
-  //     toast.success(`${values.name} added to the Contacts`);
-
-  //   } catch (error) {
-  //     return toast.error(`Error ocured during adding contact ${values.name}`);
-  //   }
-  // };
 
   return (
     <Formik
@@ -121,9 +91,9 @@ export const ContactsForm = () => {
             title="Phone number must contain only numbers, spaces, hyphen and +"
             placeholder="Phone number"
           />
-          <ErrorMessage name="number" component="span" />
+          <ErrorMessage name="phone" component="span" />
         </FormLabel>
-        <AddButton type="submit" disabled={isLoading || isSuccess}>
+        <AddButton type="submit">
           <HiUserAdd />
           Add contact
         </AddButton>

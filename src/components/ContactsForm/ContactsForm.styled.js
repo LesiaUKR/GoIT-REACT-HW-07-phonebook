@@ -52,8 +52,7 @@ export const AddButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 250ms ease-in-out;
-  &:hover,
-  &:focus {
+  &:hover{
     box-shadow: rgba(22, 100, 226, 0.24) 0px 3px 8px;
     background-color: green;
     border: 2px solid lightgreen;
